@@ -26,7 +26,7 @@ class ProfileHandler:
             except Exception as e:
                 print(f"Unable to load profile '{filename}': {e}")
 
-        cls.profiles['best_effort'] = {'a': 1}
+        cls.profiles['best_effort'] = {}
 
     @classmethod
     def GetProfileNames(cls) -> List[str]:
