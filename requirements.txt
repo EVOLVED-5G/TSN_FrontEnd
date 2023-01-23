@@ -1,2 +1,3 @@
 Flask>=2.2.2
 PyYAML>=3.12
+Flask-Misaka==1.0.0
