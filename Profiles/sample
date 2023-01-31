@@ -1,0 +1,15 @@
+# Profiles must be saved as yml or yaml files.
+
+# The following values specify the expected (SLA) KPIs
+delay: <integer (ms). Maximum value>
+jitter: <integer (ms). Maximum value>
+throughput: <float (Mbps). Minimum value>
+packet_loss: <float (percent). Maximum value>
+
+# The following values specify the traffic type:
+periodicity: <string>
+period: <integer (ms)>
+time_sync: <boolean>
+data_size: <integer (bytes)>
+critical: <boolean>
+

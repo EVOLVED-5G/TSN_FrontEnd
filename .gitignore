@@ -97,4 +97,7 @@ ENV/
 # Rope project settings
 .ropeproject
 .idea/
-Profiles/
+
+# Ignore all profiles except for 'sample'
+Profiles/*
+!Profiles/sample

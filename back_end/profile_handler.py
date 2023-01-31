@@ -18,13 +18,15 @@ class ProfileHandler:
         cls.profiles = {}
 
         files = _getFiles(cls.baseFolder)
-        for path, filename in files:
+        for path, file in files:
             try:
-                with open(path, 'r', encoding='utf-8') as stream:
-                    data = yaml.safe_load(stream)
-                    cls.profiles[splitext(filename)[0]] = data
+                filename, extension = splitext(file)
+                if extension in ['.yml', '.yaml']:
+                    with open(path, 'r', encoding='utf-8') as stream:
+                        data = yaml.safe_load(stream)
+                        cls.profiles[filename] = data
             except Exception as e:
-                print(f"Unable to load profile '{filename}': {e}")
+                print(f"Unable to load profile '{file}': {e}")
 
         cls.profiles['best_effort'] = {}
 
