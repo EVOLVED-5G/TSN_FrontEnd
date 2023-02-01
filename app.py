@@ -6,7 +6,7 @@ app = Flask(__name__)
 from front_end import bp as frontEndApi
 app.register_blueprint(frontEndApi, url_prefix='/api/v1', name='frontEndApp')
 
-Misaka(app)
+Misaka(app, tables=True)
 with open('README.md', 'r', encoding='utf-8') as file:
     readme = file.read()
 
