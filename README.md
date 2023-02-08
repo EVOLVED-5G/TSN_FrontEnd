@@ -6,17 +6,17 @@ The TSN Application Function allows the configuration of certain parameters in t
 of the testbed. These parameters indicate the expected QoS of the communication. The following parameters can
 be configured, either as part of a Profile, or as values in the `overrides` dictionaries:
 
-The following values specify the expected (SLA) KPIs
-- `delay`: float (ms). Maximum value
-- `jitter`: float (ms). Maximum value
-- `throughput`: float (Mbps). Minimum value
-- `packet_loss`: float (percent). Maximum value
+The following values specify the expected (SLA) KPIs:
+  - `delay`: float (ms). Maximum value
+  - `jitter`: float (ms). Maximum value
+  - `throughput`: float (Mbps). Minimum value
+  - `packet_loss`: float (percent). Maximum value
 
 The following values specify the traffic type:
-- `periodicity`: 'periodic' or 'sporadic'
-- `period`: float (ms)
-- `data_size`: integer (bytes)
-- `critical`: boolean
+  - `periodicity`: 'periodic' or 'sporadic'
+  - `period`: float (ms)
+  - `data_size`: integer (bytes)
+  - `critical`: boolean
 
 The following table can be used as reference for the `period` and `periodicity` values, depending on the kind of
 traffic:

@@ -3,7 +3,7 @@ from uuid import uuid4
 
 class Configuration:
     def __init__(self, profile: str, overrides: Dict):
-        self.token = uuid4().hex
+        self.token = None
         self.profile = profile
         self.overrides = overrides
 
@@ -12,11 +12,17 @@ class ConfigurationHandler:
 
     @classmethod
     def Add(cls, identifier: str, profile: str, overrides: Dict) -> Tuple[bool, str]:
+        """Tokens are generated as int. Sent as str on the front-end, but as int in the back-end"""
+
         if identifier not in cls.configurations.keys():
             config = Configuration(profile, overrides)
+            token = uuid4().int
+            while token in [c.token for c in cls.configurations.values()]:  # Ensure that the token is unique
+                token = uuid4().int
+            config.token = token
             cls.configurations[identifier] = config
             # TODO: Apply configuration
-            return True, config.token
+            return True, str(config.token)
         else:
             return False, f"Identifier '{identifier}' already exists"
 
@@ -26,7 +32,7 @@ class ConfigurationHandler:
             return False, f"Identifier '{identifier}' does not exist"
         else:
             config = cls.configurations[identifier]
-            if config.token != token:
+            if token != str(config.token):  # Front-end handles tokens as str
                 return False, f"Unauthorized"
             else:
                 # TODO: Clear configuration
