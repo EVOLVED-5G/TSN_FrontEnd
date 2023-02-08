@@ -9,19 +9,30 @@ class Configuration:
 
 class ConfigurationHandler:
     configurations: Dict[str, Configuration] = {}
+    backend = None
+
+    @classmethod
+    def SetBackEnd(cls, backend: str):
+        cls.backend = backend
 
     @classmethod
     def Add(cls, identifier: str, profile: str, overrides: Dict) -> Tuple[bool, str]:
         """Tokens are generated as int. Sent as str on the front-end, but as int in the back-end"""
 
         if identifier not in cls.configurations.keys():
+            if cls.backend is not None:
+                pass  # TODO: Apply configuration
+            else:  # Limited functionality: Accept only best_effort without customization
+                if profile != 'best_effort' or len(overrides) > 0:
+                    return False, "Requested profile or overrides are not supported"
+
             config = Configuration(profile, overrides)
             token = uuid4().int
             while token in [c.token for c in cls.configurations.values()]:  # Ensure that the token is unique
                 token = uuid4().int
             config.token = token
+
             cls.configurations[identifier] = config
-            # TODO: Apply configuration
             return True, str(config.token)
         else:
             return False, f"Identifier '{identifier}' already exists"
