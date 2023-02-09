@@ -33,6 +33,17 @@ traffic:
 | Video/Audio/Voice                   | periodic          | Frame Rate/Sample Rate |
 | Best Effort                         | sporadic          | n.a.                   |
 
+### TSN backend
+
+The TSN AF can work without a real TSN backend. This is the default configuration (no value specified for `BackEnd` in
+`config.yml`), however, in this case the TSN AF will only accept best-effort requests. This is, the following payload:
+
+```
+{"identifier": <identifier>, "profile": "best_effort", "overrides": {}}
+```
+
+Any other request will result in a 400 error with the following detail message: `"Requested profile or overrides are
+not supported"`. To enable a backend, specify the URL where the TSN backend is listening on `config.yml`.
 
 ## Deployment
 
@@ -43,13 +54,14 @@ TSF AF as a Docker container. The deployment procedure is as follows:
 
 1. Clone this repository. The environment must already have an installation of Docker (tested on version 20.10.7).
 2. Include any necessary profile information in the `Profiles` sub-folder. `Profiles/sample` can be used as a guide.
-3. Execute `build.sh`. This file will prepare a Docker image (tagged `tsn_af`).
-4. Execute `run.sh`. This will create a new container (named `TSN_AF`) based on the previously generated image. By
+3. Edit the contents of `config.yml` if necessary. By default, the TSN_AF works on backend-less mode.
+4. Execute `build.sh`. This file will prepare a Docker image (tagged `tsn_af`).
+5. Execute `run.sh`. This will create a new container (named `TSN_AF`) based on the previously generated image. By
 default, the TSN AF will listen on port 8888, however, this can be modified by passing other port number as a
 parameter to `run.sh`.
 
-> Note that the build process will create a copy of the files in the `Profiles` sub-folder. If these files are
-> edited after the creation of the image, this process (starting from step 3) must be executed again.
+> Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.yml`. If these
+> files are edited after the creation of the image, this process (starting from step 3) must be executed again.
 > To ensure that the changes are reflected, remove the existing container before the build
 > (`docker stop TSN_AF && docker rm TSN_AF`)
 
@@ -64,7 +76,7 @@ The TSN AF can be deployed directly in a host machine. The procedure is as follo
 4. Install the required libraries: `pip install -r requirements.txt`
 5. Start the server: `flask run`
 
-> Changes made to the `Profiles` folder will be reflected in the TSN AF after restarting the server
+> Changes made to the `Profiles` folder and `config.yml` will be reflected in the TSN AF after restarting the server
 
 ## Endpoints
 

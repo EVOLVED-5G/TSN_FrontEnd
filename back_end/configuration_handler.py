@@ -1,6 +1,7 @@
 from typing import Dict, Tuple
 from uuid import uuid4
-from requests import post, Response
+from requests import post
+from .profile_handler import ProfileHandler
 
 class Configuration:
     def __init__(self, profile: str, overrides: Dict):
@@ -10,10 +11,12 @@ class Configuration:
 
     @property
     def AsPayload(self) -> Dict:
+        values = ProfileHandler.GetProfileData(self.profile).copy()
+        values.update(self.overrides)
+
         return {
             'token': self.token,
-            'profile': self.profile,
-            'overrides': self.overrides
+            'values': values
         }
 
 class ConfigurationHandler:
