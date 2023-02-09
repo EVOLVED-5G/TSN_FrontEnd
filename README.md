@@ -61,7 +61,7 @@ default, the TSN AF will listen on port 8888, however, this can be modified by p
 parameter to `run.sh`.
 
 > Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.yml`. If these
-> files are edited after the creation of the image, this process (starting from step 3) must be executed again.
+> files are edited after the creation of the image, this process (starting from step 4) must be executed again.
 > To ensure that the changes are reflected, remove the existing container before the build
 > (`docker stop TSN_AF && docker rm TSN_AF`)
 
@@ -80,7 +80,7 @@ The TSN AF can be deployed directly in a host machine. The procedure is as follo
 
 ## Endpoints
 
-### [GET] `/profiles`
+### [GET] `/profile`
 
 Returns a list of supported profiles, with the format:
 
@@ -90,7 +90,7 @@ Returns a list of supported profiles, with the format:
 
 > Note that "best_effort" is always included.
 
-### [GET] `/profiles?name=<profile_name>`
+### [GET] `/profile?name=<profile_name>`
 
 Returns the default configuration values for `profile_name`, with the format:
 
