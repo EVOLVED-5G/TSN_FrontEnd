@@ -57,7 +57,7 @@ TSF AF as a Docker container. The deployment procedure is as follows:
 3. Edit the contents of `config.yml` if necessary. By default, the TSN_AF works on backend-less mode.
 4. Execute `build.sh`. This file will prepare a Docker image (tagged `tsn_af`).
 5. Execute `run.sh`. This will create a new container (named `TSN_AF`) based on the previously generated image. By
-default, the TSN AF will listen on port 8888, however, this can be modified by passing other port number as a
+default, the TSN AF will listen on port 8899, however, this can be modified by passing other port number as a
 parameter to `run.sh`.
 
 > Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.yml`. If these

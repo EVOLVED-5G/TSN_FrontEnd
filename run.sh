@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 if [ "$#" -ne 1 ]; then
-    port="8888"
+    port="8899"
 else
     port=$1
 fi
