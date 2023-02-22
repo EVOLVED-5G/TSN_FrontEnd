@@ -1,0 +1,84 @@
+{
+    "apiName": "/api/v1/",
+    "aefProfiles": [
+      {
+        "aefId": "string",
+        "versions": [
+          {
+            "apiVersion": "v1",
+            "expiry": "2100-11-30T10:32:02.004Z",
+            "resources": [
+              {
+                "resourceName": "TSN_LIST_PROFILES",
+                "commType": " SUBSCRIBE_NOTIFY",
+                "uri": "/{scsAsId}/profile",
+                "custOpName": "http_get",
+                "operations": ["GET"],
+                "description": "Endpoint for retrieving the list of available TSN profiles"
+              },
+              {
+                "resourceName": "TSN_DETAIL_PROFILE",
+                "commType": " SUBSCRIBE_NOTIFY",
+                "uri": "/{scsAsId}/profile?name={profileName}",
+                "custOpName": "http_get",
+                "operations": ["GET"],
+                "description": "Endpoint for retrieving information about a single TSN profile"
+              },
+              {
+                "resourceName": "TSN_APPLY_CONFIGURATION",
+                "commType": " SUBSCRIBE_NOTIFY",
+                "uri": "/{scsAsId}/apply",
+                "custOpName": "http_post",
+                "operations": ["POST"],
+                "description": "Endpoint for configuring TSN connection parameters"
+              },
+              {
+                "resourceName": "TSN_CLEAR_CONFIGURATION",
+                "commType": " SUBSCRIBE_NOTIFY",
+                "uri": "/{scsAsId}/clear",
+                "custOpName": "http_post",
+                "operations": ["POST"],
+                "description": "Endpoint for removing a previous TSN connection configuration"
+              }
+            ],
+            "custOperations": [
+              {
+                "commType": "REQUEST_RESPONSE",
+                "custOpName": "string",
+                "operations": [
+                  "POST"
+                ],
+                "description": "string"
+              }
+            ]
+          }
+        ],
+        "protocol": "HTTP_1_1",
+        "dataFormat": "JSON",
+        "securityMethods": ["OAUTH"],
+        "interfaceDescriptions": [
+          {
+            "ipv4Addr": "127.0.0.1",
+            "port": 8899,
+            "securityMethods": ["OAUTH"]
+          }
+        ]
+      }
+    ],
+    "description": "API of dummy netapp to test",
+    "supportedFeatures": "fffff",
+    "shareableInfo": {
+      "isShareable": true,
+      "capifProvDoms": [
+        "string"
+      ]
+    },
+    "serviceAPICategory": "string",
+    "apiSuppFeats": "fffff",
+    "pubApiPath": {
+      "ccfIds": [
+        "string"
+      ]
+    },
+    "ccfId": "string"
+  }

@@ -1,6 +1,7 @@
 from flask import Flask, render_template
 from flask_misaka import Misaka
 from back_end import ConfigurationHandler
+from capif import maybePublishApi
 import yaml
 
 app = Flask(__name__)
@@ -20,6 +21,7 @@ with open('README.md', 'r', encoding='utf-8') as file:
 def index():
     return render_template('index.html', mkd=readme)
 
+maybePublishApi()
 
 if __name__ == '__main__':
     app.run()
