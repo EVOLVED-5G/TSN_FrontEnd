@@ -55,12 +55,12 @@
         ],
         "protocol": "HTTP_1_1",
         "dataFormat": "JSON",
-        "securityMethods": [],
+        "securityMethods": ["OAUTH"],
         "interfaceDescriptions": [
           {
             "ipv4Addr": "127.0.0.1",
             "port": 8899,
-            "securityMethods": []
+            "securityMethods": ["OAUTH"]
           }
         ]
       }

@@ -45,6 +45,13 @@ The TSN AF can work without a real TSN backend. This is the default configuratio
 Any other request will result in a 400 error with the following detail message: `"Requested profile or overrides are
 not supported"`. To enable a backend, specify the URL where the TSN backend is listening on `config.yml`.
 
+### CAPIF integration
+
+The TSN AF can work without CAPIF, however, it will try to publish the API on every start-up. The TSN AF looks for
+CAPIF on the `capifcore` domain, so this value should be configured on the `hosts` file of the machine:
+
+```capifcore    <CAPIF IP address>```
+
 ## Deployment
 
 ### Docker container
@@ -57,8 +64,7 @@ TSF AF as a Docker container. The deployment procedure is as follows:
 3. Edit the contents of `config.yml` if necessary. By default, the TSN_AF works on backend-less mode.
 4. Execute `build.sh`. This file will prepare a Docker image (tagged `tsn_af`).
 5. Execute `run.sh`. This will create a new container (named `TSN_AF`) based on the previously generated image. By
-default, the TSN AF will listen on port 8899, however, this can be modified by passing other port number as a
-parameter to `run.sh`.
+default, the TSN AF will listen on port 8899.
 
 > Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.yml`. If these
 > files are edited after the creation of the image, this process (starting from step 4) must be executed again.
@@ -74,7 +80,8 @@ The TSN AF can be deployed directly in a host machine. The procedure is as follo
 2. Create a separate virtual environment: `python -m venv ./venv`
 3. Activate the virtual environment: `source ./venv/bin/activate`
 4. Install the required libraries: `pip install -r requirements.txt`
-5. Start the server: `flask run`
+5. Start the server: `flask run --host 0.0.0.0 --port 8899`. Other parameters can be set, but when using CAPIF these
+are the interface details.
 
 > Changes made to the `Profiles` folder and `config.yml` will be reflected in the TSN AF after restarting the server
 
