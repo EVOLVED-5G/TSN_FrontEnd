@@ -52,6 +52,16 @@ CAPIF on the `capifcore` domain, so this value should be configured on the `host
 
 ```capifcore    <CAPIF IP address>```
 
+Upon a successful publishing process, the following file will be created `capif_data/publisherDetails.txt`. This
+file contains the user name and password used during the registration (randomly generated). In the case of a Docker
+deployment, this file can be check using the following command:
+
+```
+docker exec TSN_AF bash -c "cat ./capif_data/publisherDetails.txt"
+```
+
+If the publishing process was unsuccessful this command will return a `No such file or directory` error
+
 ## Deployment
 
 ### Docker container
