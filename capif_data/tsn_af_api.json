@@ -1,5 +1,5 @@
 {
-    "apiName": "/api/v1/",
+    "apiName": "/tsn/api/",
     "aefProfiles": [
       {
         "aefId": "string",
@@ -11,7 +11,7 @@
               {
                 "resourceName": "TSN_LIST_PROFILES",
                 "commType": " SUBSCRIBE_NOTIFY",
-                "uri": "/{scsAsId}/profile",
+                "uri": "/profile",
                 "custOpName": "http_get",
                 "operations": ["GET"],
                 "description": "Endpoint for retrieving the list of available TSN profiles"
@@ -19,7 +19,7 @@
               {
                 "resourceName": "TSN_DETAIL_PROFILE",
                 "commType": " SUBSCRIBE_NOTIFY",
-                "uri": "/{scsAsId}/profile?name={profileName}",
+                "uri": "/profile?name={profileName}",
                 "custOpName": "http_get",
                 "operations": ["GET"],
                 "description": "Endpoint for retrieving information about a single TSN profile"
@@ -27,7 +27,7 @@
               {
                 "resourceName": "TSN_APPLY_CONFIGURATION",
                 "commType": " SUBSCRIBE_NOTIFY",
-                "uri": "/{scsAsId}/apply",
+                "uri": "/apply",
                 "custOpName": "http_post",
                 "operations": ["POST"],
                 "description": "Endpoint for configuring TSN connection parameters"
@@ -35,7 +35,7 @@
               {
                 "resourceName": "TSN_CLEAR_CONFIGURATION",
                 "commType": " SUBSCRIBE_NOTIFY",
-                "uri": "/{scsAsId}/clear",
+                "uri": "/clear",
                 "custOpName": "http_post",
                 "operations": ["POST"],
                 "description": "Endpoint for removing a previous TSN connection configuration"
@@ -55,12 +55,12 @@
         ],
         "protocol": "HTTP_1_1",
         "dataFormat": "JSON",
-        "securityMethods": ["OAUTH"],
+        "securityMethods": ["Oauth"],
         "interfaceDescriptions": [
           {
             "ipv4Addr": "127.0.0.1",
             "port": 8899,
-            "securityMethods": ["OAUTH"]
+            "securityMethods": ["Oauth"]
           }
         ]
       }

@@ -7,7 +7,7 @@ import yaml
 app = Flask(__name__)
 
 from front_end import bp as frontEndApi
-app.register_blueprint(frontEndApi, url_prefix='/api/v1', name='frontEndApp')
+app.register_blueprint(frontEndApi, url_prefix='/tsn/api/v1', name='frontEndApi')
 
 with open('config.yml', 'r', encoding='utf-8') as file:
     data = yaml.safe_load(file)
