@@ -104,4 +104,4 @@ Profiles/*
 
 # Ignore certificates in capif_data
 capif_data/*
-!capif_data/tsn_af_api.json
+!capif_data/tsn_af_api.Template
