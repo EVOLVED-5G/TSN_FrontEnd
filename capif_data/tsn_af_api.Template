@@ -58,8 +58,8 @@
         "securityMethods": ["Oauth"],
         "interfaceDescriptions": [
           {
-            "ipv4Addr": "127.0.0.1",
-            "port": 8899,
+            "ipv4Addr": <<HOST>>,
+            "port": <<PORT>>,
             "securityMethods": ["Oauth"]
           }
         ]

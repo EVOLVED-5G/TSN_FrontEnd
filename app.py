@@ -10,8 +10,8 @@ from front_end import bp as frontEndApi
 app.register_blueprint(frontEndApi, url_prefix='/tsn/api/v1', name='frontEndApi')
 
 with open('config.json', 'r', encoding='utf-8') as file:
-    data = json.load(file)
-    ConfigurationHandler.SetBackEnd(data['BackEnd'])
+    config = json.load(file)
+    ConfigurationHandler.SetBackEnd(config['BackEnd'])
 
 Misaka(app, tables=True)
 with open('README.md', 'r', encoding='utf-8') as file:
@@ -21,7 +21,7 @@ with open('README.md', 'r', encoding='utf-8') as file:
 def index():
     return render_template('index.html', mkd=readme)
 
-maybePublishApi()
+maybePublishApi(config)
 
 if __name__ == '__main__':
     app.run()
