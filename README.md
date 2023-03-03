@@ -36,31 +36,36 @@ traffic:
 ### TSN backend
 
 The TSN AF can work without a real TSN backend. This is the default configuration (no value specified for `BackEnd` in
-`config.yml`), however, in this case the TSN AF will only accept best-effort requests. This is, the following payload:
+`config.json`), however, in this case the TSN AF will only accept best-effort requests. This is, the following payload:
 
 ```
 {"identifier": <identifier>, "profile": "best_effort", "overrides": {}}
 ```
 
 Any other request will result in a 400 error with the following detail message: `"Requested profile or overrides are
-not supported"`. To enable a backend, specify the URL where the TSN backend is listening on `config.yml`.
+not supported"`. To enable a backend, specify the URL where the TSN backend is listening on `config.json`.
 
 ### CAPIF integration
 
 The TSN AF can work without CAPIF, however, it will try to publish the API on every start-up. The TSN AF looks for
-CAPIF on the `capifcore` domain, so this value should be configured on the `hosts` file of the machine:
+CAPIF using the values configured in the `CAPIF` section of `config.json`.
 
-```capifcore    <CAPIF IP address>```
+> By default, this configuration points to the `capifcore` domain, which is also the default for CAPIF deployments.
+> Unless the CAPIF domain can be resolved by external DNS, this value should be configured on the `hosts` file of the
+> machine:
+> 
+> ```capifcore    <CAPIF IP address>```
 
 Upon a successful publishing process, the following file will be created `capif_data/publisherDetails.txt`. This
-file contains the user name and password used during the registration (randomly generated). In the case of a Docker
-deployment, this file can be check using the following command:
+file contains the user name and password used during the registration (randomly generated) and the host and port
+configured for the FrontEnd. In the case of a Docker deployment, this file can be check using the following command
+in the host machine:
 
 ```
 docker exec TSN_AF bash -c "cat ./capif_data/publisherDetails.txt"
 ```
 
-If the publishing process was unsuccessful this command will return a `No such file or directory` error
+If the publishing process was unsuccessful this command will return a `No such file or directory` error.
 
 ## Deployment
 
@@ -71,12 +76,15 @@ TSF AF as a Docker container. The deployment procedure is as follows:
 
 1. Clone this repository. The environment must already have an installation of Docker (tested on version 20.10.7).
 2. Include any necessary profile information in the `Profiles` sub-folder. `Profiles/sample` can be used as a guide.
-3. Edit the contents of `config.yml` if necessary. By default, the TSN_AF works on backend-less mode.
+Profiles must have the `yml` extension to be read by the TSN AF.
+3. Edit the contents of `config.json` if necessary. By default:
+     - The TSN_AF works on backend-less mode.
+     - The frontend is configured localhost:8899
+     - CAPIF is configured in the `capifcore` domain, with ports 8080 (HTTP) and 443 (HTTPS)
 4. Execute `build.sh`. This file will prepare a Docker image (tagged `tsn_af`).
-5. Execute `run.sh`. This will create a new container (named `TSN_AF`) based on the previously generated image. By
-default, the TSN AF will listen on port 8899.
+5. Execute `run.sh`. This will create a new container (named `TSN_AF`) based on the previously generated image.
 
-> Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.yml`. If these
+> Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.json`. If these
 > files are edited after the creation of the image, this process (starting from step 4) must be executed again.
 > To ensure that the changes are reflected, remove the existing container before the build
 > (`docker stop TSN_AF && docker rm TSN_AF`)
@@ -87,17 +95,21 @@ The TSN AF can be deployed directly in a host machine. The procedure is as follo
 
 1. Clone this repository and navigate to the containing folder. The environment must already be able to run Python
 (3.10) code.
-2. Create a separate virtual environment: `python -m venv ./venv`
-3. Activate the virtual environment: `source ./venv/bin/activate`
-4. Install the required libraries: `pip install -r requirements.txt`
-5. Start the server: `flask run --host 0.0.0.0 --port 8899`. Other parameters can be set, but when using CAPIF these
-are the interface details.
+2. Follow steps (2) and (3) of the Docker deployment guide in order to configure the TSN AF. 
+3. Create a separate virtual environment: `python -m venv ./venv`
+4. Activate the virtual environment: `source ./venv/bin/activate`
+5. Install the required libraries: `pip install -r requirements.txt`
+6. Start the server: `flask run --host <HOST>> --port <PORT>`. When exposing the frontend through CAPIF, make sure
+that the values for `<HOST>` and `<PORT>` match those configured in `config.json`
 
-> Changes made to the `Profiles` folder and `config.yml` will be reflected in the TSN AF after restarting the server
+> Changes made to the `Profiles` folder and `config.json` will be reflected in the TSN AF after restarting the server.
+>
+> In order to force a new CAPIF publishing process, manually delete the `capif_data/publisherDetails.txt` file
+> previously generated.
 
 ## Endpoints
 
-### [GET] `/profile`
+### [GET] `/tsn/api/v1/profile`
 
 Returns a list of supported profiles, with the format:
 
@@ -107,7 +119,7 @@ Returns a list of supported profiles, with the format:
 
 > Note that "best_effort" is always included.
 
-### [GET] `/profile?name=<profile_name>`
+### [GET] `/tsn/api/v1/profile?name=<profile_name>`
 
 Returns the default configuration values for `profile_name`, with the format:
 
@@ -115,7 +127,7 @@ Returns the default configuration values for `profile_name`, with the format:
 {"<profile_name>": {"<parameter1>": <value1>, "<parameter2>": <value2>, ...}}
 ```
 
-### [POST] `/apply`
+### [POST] `/tsn/api/v1/apply`
 
 Applies the specified configuration to the selected traffic identifier. The endpoint expects to receive a payload with
 the format:
@@ -147,7 +159,7 @@ In case of failure, the TSN AF will reply with the following payload (status 400
 {"message": ["Bad Request"|"Request Failed"], "detail": "<detailed_error_explanation>"}
 ```
 
-### [POST] `/clear`
+### [POST] `/tsn/api/v1/clear`
 
 Disables the configuration applied by a previous usage of `/apply`, for the selected traffic `identifier`. The endpoint
 expects to receive a payload with the format:
