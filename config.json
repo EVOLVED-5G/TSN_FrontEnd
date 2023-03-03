@@ -1,0 +1,12 @@
+{
+  "BackEnd": null,
+  "FrontEnd": {
+    "Host": "127.0.0.1",
+    "Port": 8899
+  },
+  "CAPIF": {
+    "Host": "capifcore",
+    "HttpPort": 8080,
+    "HttpsPort": 443
+  }
+}

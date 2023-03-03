@@ -1,4 +1,4 @@
 Flask>=2.2.2
 PyYAML>=3.12
 Flask-Misaka>=1.0.0
-# TODO: evolved5g>=0.9.0 
+evolved5g>=1.0.0
