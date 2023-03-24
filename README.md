@@ -47,8 +47,9 @@ not supported"`. To enable a backend, specify the URL where the TSN backend is l
 
 ### CAPIF integration
 
-The TSN AF can work without CAPIF, however, it will try to publish the API on every start-up. The TSN AF looks for
-CAPIF using the values configured in the `CAPIF` section of `config.json`.
+The TSN AF can optionally work with CAPIF, both for publishing the API and for securing access to the endpoints. This
+behavior is controlled by the `Enabled` and `SecurityEnabled` entries in the `CAPIF` section of `config.json`. These
+two settings are set to `true` by default.
 
 > By default, this configuration points to the `capifcore` domain, which is also the default for CAPIF deployments.
 > Unless the CAPIF domain can be resolved by external DNS, this value should be configured on the `hosts` file of the
@@ -66,6 +67,12 @@ docker exec TSN_AF bash -c "cat ./capif_data/publisherDetails.txt"
 ```
 
 If the publishing process was unsuccessful this command will return a `No such file or directory` error.
+
+When `SecurityEnabled` is set to `true`, every request sent to the API endpoints must include a valid `Authentication`
+header, with the Bearer provided by CAPIF.
+
+> If this setting is enabled, but for some reason the TSN AF was not able to register the API through CAPIF, or to
+> retrieve the CAPIF public key, the server will immediately abort the execution.
 
 ## Deployment
 
