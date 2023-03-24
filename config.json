@@ -5,6 +5,8 @@
     "Port": 8899
   },
   "CAPIF": {
+    "Enabled": true,
+    "SecurityEnabled": true,
     "Host": "capifcore",
     "HttpPort": 8080,
     "HttpsPort": 443
