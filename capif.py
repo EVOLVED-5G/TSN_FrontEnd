@@ -6,19 +6,19 @@ from requests.exceptions import RequestException
 from typing import Dict
 
 
-def maybePublishApi(config: Dict):
+def maybePublishApi(config: Dict) -> [None | str]:
     detailsFile = './capif_data/publisherDetails.txt'
+    capif = config['CAPIF']
+    baseFolder = abspath(join(dirname(__file__), 'capif_data'))
 
     if exists(detailsFile):  # Publish the API through CAPIF only once
         print("API already registered.")
     else:
-        baseFolder = abspath(join(dirname(__file__), 'capif_data'))
         user = "tsn_" + ''.join(choice(ascii_letters) for _ in range(6))
         password = ''.join(choice(ascii_letters) for _ in range(6))
 
         host = config['FrontEnd']['Host']
         port = config['FrontEnd']['Port']
-        capif = config['CAPIF']
 
         with open(join(baseFolder, 'tsn_af_api.Template'), 'r', encoding='utf-8') as template:
             with open(join(baseFolder, 'tsn_af_api.json'), 'w', encoding='utf-8') as output:
@@ -59,3 +59,19 @@ def maybePublishApi(config: Dict):
         except RequestException as e:
             print(f'Unable to publish API. Exception: {e}')
 
+    if capif["SecurityEnabled"]:
+        certPath = join(baseFolder, 'capif_cert_server.pem')
+        if not exists(certPath):
+            print("Certificate file not found")
+            return None
+        else:
+            with open(certPath, 'rb') as certFile:
+                certificate = certFile.read()
+
+            from OpenSSL import crypto
+            crypt = crypto.load_certificate(crypto.FILETYPE_PEM, certificate)
+            publicKey = crypt.get_pubkey()
+            return crypto.dump_publickey(crypto.FILETYPE_PEM, publicKey)
+    else:
+        print("Security is disabled.")
+        return None
