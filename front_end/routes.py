@@ -3,6 +3,7 @@ from flask import jsonify, request, current_app
 from front_end import bp
 from back_end import ProfileHandler, ConfigurationHandler
 from flask_jwt_extended import jwt_required, get_jwt
+from capif import CapifHandler
 
 def validate(data: Dict, expected: List[str]):
     keys = data.keys()
