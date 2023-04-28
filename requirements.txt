@@ -2,4 +2,4 @@ Flask>=2.2.2
 PyYAML>=3.12
 Flask-Misaka>=1.0.0
 Flask-JWT-Extended>=4.4.4
-evolved5g>=1.0.0
+evolved5g>=1.0.4
