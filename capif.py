@@ -14,7 +14,7 @@ class CapifHandler:
     host = httpPort = httpsPort = None
     securityEnabled = loggingEnabled = None
 
-    capifLogger = None
+    capifLogger = apiId = None
 
     @classmethod
     def Initialize(cls, config: Dict):
@@ -98,13 +98,24 @@ class CapifHandler:
             return None
 
     @classmethod
-    def MaybeLog(cls):
+    def MaybeLog(cls, invokerId, endpoint, resource, uri, method, time, payload, response, code):
         if not cls.initialized:
             raise RuntimeError("CapifHandler must be initialized before calling this method.")
 
         if cls.loggingEnabled:
-            if cls.capifLogger is None:
+            if cls.apiId is None:
                 cls.capifLogger = CAPIFLogger(certificates_folder=cls.baseFolder,
                                               capif_host=cls.host, capif_https_port=str(cls.httpsPort))
+                serviceDescription = cls.capifLogger.get_capif_service_description(
+                    capif_service_api_description_json_full_path=join(cls.baseFolder, "CAPIF_tsn_af_api.json"))
+                cls.apiId = serviceDescription["apiId"]
 
-            # TODO: Logging
+            entry = cls.capifLogger.LogEntry(
+                apiId=cls.apiId, apiVersion='v1', apiName=endpoint,
+                resourceName=resource, uri=uri, protocol='HTTP_1_1',
+                invocationTime=time, invocationLatency=10, operation=method,
+                result=code, inputParameters=payload, outputParameters=response
+            )
+
+            cls.capifLogger.save_log(invokerId, [entry])
+

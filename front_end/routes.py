@@ -27,7 +27,7 @@ def checkAuthorized() -> (bool, [str | None]):
     else:
         return True, None
 
-def handleLogging(invoker: str | None, response: str, status: int):
+def handleLogging(invoker: str | None, resource: str, response: str, status: int):
     time = datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
     uri = request.base_url
     method = request.method
@@ -36,16 +36,19 @@ def handleLogging(invoker: str | None, response: str, status: int):
     with open('access.log', 'a', encoding='utf8') as log:
         log.write(f'{time}|{method}|{uri}|Invoker:"{invoker}"|Payload:"{payload}"|Response:"{response}"[{status}]')
 
-    CapifHandler.MaybeLog()
+    CapifHandler.MaybeLog(invokerId=invoker, endpoint=request.full_path,
+                          resource=resource, uri=uri, method=method, time=time,
+                          payload=payload, response=response, code=status)
 
 
 @bp.route('/profile', methods=['GET'])
 @jwt_required(optional=True)
 def profile():
     isAuthorized, invokerId = checkAuthorized()
+    name = request.args.get('name', None)
+    resource = 'TSN_LIST_PROFILES' if name is None else 'TSN_DETAIL_PROFILES'
 
     if isAuthorized:
-        name = request.args.get('name', None)
         if name is None:
             response = {'profiles': ProfileHandler.GetProfileNames()}
         else:
@@ -55,7 +58,7 @@ def profile():
         status = 403
         response = "403 Forbidden"
 
-    handleLogging(invokerId, response, status)
+    handleLogging(invokerId, resource, response, status)
     return jsonify(response), status
 
 @bp.route('/apply', methods=['POST'])
@@ -92,7 +95,7 @@ def apply():
         response = "403 Forbidden"
 
 
-    # TODO: Use logging
+    handleLogging(invokerId, "TSN_APPLY_CONFIGURATION" , response, status)
     return response, status
 
 
@@ -126,5 +129,5 @@ def clear():
         status = 403
         response = "403 Forbidden"
 
-    # TODO: Use logging
+    handleLogging(invokerId, "TSN_CLEAR_CONFIGURATION", response, status)
     return response, status
