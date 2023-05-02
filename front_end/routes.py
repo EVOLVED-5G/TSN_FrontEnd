@@ -13,75 +13,108 @@ def validate(data: Dict, expected: List[str]):
             missing.append(key)
     return missing
 
-def isAuthorized() -> bool:
+def checkAuthorized() -> (bool, [str | None]):
     if current_app.config["CAPIF_SECURITY_ENABLED"]:
         # If the token exists, but is invalid, @jwt_required will handle the error. This can be confirmed by commenting
         # @jwt_required, importing verify_jwt_in_request and adding a breakpoint before processing the request. Calling
         # verify_jwt_in_request with a too short Bearer will raise "Not enough segments", the same as when using
         # @jwt_required directly.
 
-        return len(get_jwt()) != 0
+        invoker = get_jwt().get('sub', None)
+        return invoker is not None, invoker
     else:
-        return True
+        return True, None
 
 
 @bp.route('/profile', methods=['GET'])
 @jwt_required(optional=True)
 def profile():
-    if not isAuthorized(): return "403 Forbidden", 403
+    isAuthorized, invokerId = checkAuthorized()
 
-    name = request.args.get('name', None)
-    if name is None:
-        return jsonify(
-            {'profiles': ProfileHandler.GetProfileNames()}
-        )
+    if isAuthorized:
+        name = request.args.get('name', None)
+        if name is None:
+            response = jsonify(
+                {'profiles': ProfileHandler.GetProfileNames()}
+            )
+        else:
+            response = jsonify(
+                {name: ProfileHandler.GetProfileData(name)}
+            )
+        status = 200
     else:
-        return jsonify(
-            {name: ProfileHandler.GetProfileData(name)}
-        )
+        status = 403
+        response = "403 Forbidden"
+
+    # TODO: Use logging
+    return response, status
 
 @bp.route('/apply', methods=['POST'])
 @jwt_required(optional=True)
 def apply():
-    if not isAuthorized(): return "403 Forbidden", 403
+    isAuthorized, invokerId = checkAuthorized()
 
-    data = request.json
+    if isAuthorized:
+        data = request.json
 
-    missing = validate(data, ['profile', 'identifier', 'overrides'])
-    if len(missing) > 0:
-        return jsonify({
-            'message': 'Bad Request',
-            'detail': f'Payload is missing the following fields: {missing}'
-        }), 400
-
-    success, text = ConfigurationHandler.Add(data['identifier'], data['profile'], data['overrides'])
-    if success:
-        return jsonify({
-            'message': 'Success', 'token': text
-        }), 200
+        missing = validate(data, ['profile', 'identifier', 'overrides'])
+        if len(missing) > 0:
+            status = 400
+            response = jsonify({
+                'message': 'Bad Request',
+                'detail': f'Payload is missing the following fields: {missing}'
+            })
+        else:
+            success, text = ConfigurationHandler.Add(data['identifier'], data['profile'], data['overrides'])
+            if success:
+                status = 200
+                response = jsonify({
+                    'message': 'Success', 'token': text
+                })
+            else:
+                status = 400
+                response = jsonify({
+                    'message': 'Request Failed', 'detail': text
+                })
     else:
-        return jsonify({
-            'message': 'Request Failed', 'detail': text
-        }), 400
+        status = 403
+        response = "403 Forbidden"
+
+
+    # TODO: Use logging
+    return response, status
+
 
 @bp.route('/clear', methods=['POST'])
 @jwt_required(optional=True)
 def clear():
-    if not isAuthorized(): return "403 Forbidden", 403
+    isAuthorized, invokerId = checkAuthorized()
 
-    data = request.json
+    if isAuthorized:
+        data = request.json
 
-    missing = validate(data, ['identifier', 'token'])
-    if len(missing) > 0:
-        return jsonify({
-            'message': 'Bad Request',
-            'detail': f'Payload is missing the following fields: {missing}'
-        }), 400
-
-    success, text = ConfigurationHandler.Remove(data['identifier'], data['token'])
-    if success:
-        return jsonify({'message': text}), 200
+        missing = validate(data, ['identifier', 'token'])
+        if len(missing) > 0:
+            status = 400
+            response = jsonify({
+                'message': 'Bad Request',
+                'detail': f'Payload is missing the following fields: {missing}'
+            })
+        else:
+            success, text = ConfigurationHandler.Remove(data['identifier'], data['token'])
+            if success:
+                status = 200
+                response = jsonify({
+                    'message': text
+                })
+            else:
+                status = 400
+                response = jsonify({
+                    'message': 'Request Failed', 'detail': text
+                })
     else:
-        return jsonify({
-            'message': 'Request Failed', 'detail': text
-        }), 400
+        status = 403
+        response = "403 Forbidden"
+
+    # TODO: Use logging
+    return response, status
