@@ -3,7 +3,9 @@ from flask import jsonify, request, current_app
 from front_end import bp
 from back_end import ProfileHandler, ConfigurationHandler
 from flask_jwt_extended import jwt_required, get_jwt
+from datetime import datetime, timezone
 from capif import CapifHandler
+
 
 def validate(data: Dict, expected: List[str]):
     keys = data.keys()
@@ -25,6 +27,17 @@ def checkAuthorized() -> (bool, [str | None]):
     else:
         return True, None
 
+def handleLogging(invoker: str | None, response: str, status: int):
+    time = datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
+    uri = request.base_url
+    method = request.method
+    payload = request.json if request.is_json else {}
+
+    with open('access.log', 'a', encoding='utf8') as log:
+        log.write(f'{time}|{method}|{uri}|Invoker:"{invoker}"|Payload:"{payload}"|Response:"{response}"[{status}]')
+
+    CapifHandler.MaybeLog()
+
 
 @bp.route('/profile', methods=['GET'])
 @jwt_required(optional=True)
@@ -34,20 +47,16 @@ def profile():
     if isAuthorized:
         name = request.args.get('name', None)
         if name is None:
-            response = jsonify(
-                {'profiles': ProfileHandler.GetProfileNames()}
-            )
+            response = {'profiles': ProfileHandler.GetProfileNames()}
         else:
-            response = jsonify(
-                {name: ProfileHandler.GetProfileData(name)}
-            )
+            response = {name: ProfileHandler.GetProfileData(name)}
         status = 200
     else:
         status = 403
         response = "403 Forbidden"
 
-    # TODO: Use logging
-    return response, status
+    handleLogging(invokerId, response, status)
+    return jsonify(response), status
 
 @bp.route('/apply', methods=['POST'])
 @jwt_required(optional=True)
@@ -60,22 +69,24 @@ def apply():
         missing = validate(data, ['profile', 'identifier', 'overrides'])
         if len(missing) > 0:
             status = 400
-            response = jsonify({
+            response = {
                 'message': 'Bad Request',
                 'detail': f'Payload is missing the following fields: {missing}'
-            })
+            }
         else:
             success, text = ConfigurationHandler.Add(data['identifier'], data['profile'], data['overrides'])
             if success:
                 status = 200
-                response = jsonify({
-                    'message': 'Success', 'token': text
-                })
+                response = {
+                    'message': 'Success',
+                    'token': text
+                }
             else:
                 status = 400
-                response = jsonify({
-                    'message': 'Request Failed', 'detail': text
-                })
+                response = {
+                    'message': 'Request Failed',
+                    'detail': text
+                }
     else:
         status = 403
         response = "403 Forbidden"
@@ -96,22 +107,21 @@ def clear():
         missing = validate(data, ['identifier', 'token'])
         if len(missing) > 0:
             status = 400
-            response = jsonify({
+            response = {
                 'message': 'Bad Request',
                 'detail': f'Payload is missing the following fields: {missing}'
-            })
+            }
         else:
             success, text = ConfigurationHandler.Remove(data['identifier'], data['token'])
             if success:
                 status = 200
-                response = jsonify({
-                    'message': text
-                })
+                response = {'message': text}
             else:
                 status = 400
-                response = jsonify({
-                    'message': 'Request Failed', 'detail': text
-                })
+                response = {
+                    'message': 'Request Failed',
+                    'detail': text
+                }
     else:
         status = 403
         response = "403 Forbidden"

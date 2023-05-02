@@ -17,8 +17,8 @@ with open('README.md', 'r', encoding='utf-8') as file:
     readme = file.read()
 
 if app.config["CAPIF_ENABLED"]:
-    capif = CapifHandler(config)
-    maybePublicKey =  capif.MaybePublishApi()
+    CapifHandler.Initialize(config)
+    maybePublicKey = CapifHandler.MaybePublishApi()
 
     if app.config["CAPIF_SECURITY_ENABLED"]:
         if maybePublicKey is None:

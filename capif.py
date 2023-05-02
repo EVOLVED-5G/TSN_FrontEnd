@@ -1,4 +1,4 @@
-from evolved5g.sdk import CAPIFProviderConnector
+from evolved5g.sdk import CAPIFProviderConnector, CAPIFLogger
 from os.path import exists, join, dirname, abspath
 from random import choice
 from string import ascii_letters
@@ -9,35 +9,49 @@ class CapifHandler:
     detailsFile = './capif_data/publisherDetails.txt'
     baseFolder = abspath(join(dirname(__file__), 'capif_data'))
 
-    def __init__(self, config: Dict):
-        self.frontEndHost = config['FrontEnd']['Host']
-        self.frontEndPort = config['FrontEnd']['Port']
+    initialized = False
+    frontEndHost = frontEndPort = None
+    host = httpPort = httpsPort = None
+    securityEnabled = loggingEnabled = None
+
+    capifLogger = None
+
+    @classmethod
+    def Initialize(cls, config: Dict):
+        cls.frontEndHost = config['FrontEnd']['Host']
+        cls.frontEndPort = config['FrontEnd']['Port']
 
         capif = config['CAPIF']
-        self.host = capif['Host']
-        self.httpPort = capif['HttpPort']
-        self.httpsPort = capif['HttpsPort']
-        self.securityEnabled = capif['SecurityEnabled']
-        self.loggingEnabled = capif['LoggingEnabled']
+        cls.host = capif['Host']
+        cls.httpPort = capif['HttpPort']
+        cls.httpsPort = capif['HttpsPort']
+        cls.securityEnabled = capif['SecurityEnabled']
+        cls.loggingEnabled = capif['LoggingEnabled']
 
-    def MaybePublishApi(self) -> [None | str]:
-        if exists(self.detailsFile):  # Publish the API through CAPIF only once
+        cls.initialized = True
+
+    @classmethod
+    def MaybePublishApi(cls) -> [None | str]:
+        if not cls.initialized:
+            raise RuntimeError("CapifHandler must be initialized before calling this method.")
+
+        if exists(cls.detailsFile):  # Publish the API through CAPIF only once
             print("API already registered.")
         else:
             user = "tsn_" + ''.join(choice(ascii_letters) for _ in range(6))
             password = ''.join(choice(ascii_letters) for _ in range(6))
 
-            with open(join(self.baseFolder, 'tsn_af_api.Template'), 'r', encoding='utf-8') as template:
-                with open(join(self.baseFolder, 'tsn_af_api.json'), 'w', encoding='utf-8') as output:
+            with open(join(cls.baseFolder, 'tsn_af_api.Template'), 'r', encoding='utf-8') as template:
+                with open(join(cls.baseFolder, 'tsn_af_api.json'), 'w', encoding='utf-8') as output:
                     for line in template:
                         output.write(line
-                                     .replace('<<HOST>>', f'"{self.frontEndHost}"')
-                                     .replace('<<PORT>>', str(self.frontEndPort)))
+                                     .replace('<<HOST>>', f'"{cls.frontEndHost}"')
+                                     .replace('<<PORT>>', str(cls.frontEndPort)))
 
-            capif_connector = CAPIFProviderConnector(certificates_folder=self.baseFolder,
-                                                     capif_host=self.host,
-                                                     capif_http_port=self.httpPort,
-                                                     capif_https_port=self.httpsPort,
+            capif_connector = CAPIFProviderConnector(certificates_folder=cls.baseFolder,
+                                                     capif_host=cls.host,
+                                                     capif_http_port=cls.httpPort,
+                                                     capif_https_port=cls.httpsPort,
                                                      capif_netapp_username=user,
                                                      capif_netapp_password=password,
                                                      description="TSN AF API",
@@ -53,21 +67,21 @@ class CapifHandler:
                 capif_connector.register_and_onboard_provider()
 
                 capif_connector.publish_services(
-                    service_api_description_json_full_path=abspath(join(self.baseFolder, 'tsn_af_api.json')))
+                    service_api_description_json_full_path=abspath(join(cls.baseFolder, 'tsn_af_api.json')))
 
-                with open(self.detailsFile, 'w', encoding="utf-8") as output:
+                with open(cls.detailsFile, 'w', encoding="utf-8") as output:
                     output.write(f'API registered with the following details:\n')
                     output.write(f'  User: {user}\n')
                     output.write(f'  Password: {password}\n')
-                    output.write(f'  Host: {self.frontEndHost}\n')
-                    output.write(f'  Port: {self.frontEndPort}\n')
+                    output.write(f'  Host: {cls.frontEndHost}\n')
+                    output.write(f'  Port: {cls.frontEndPort}\n')
 
                 print("API registered in CAPIF")
             except RequestException as e:
                 print(f'Unable to publish API. Exception: {e}')
 
-        if self.securityEnabled:
-            certPath = join(self.baseFolder, 'capif_cert_server.pem')
+        if cls.securityEnabled:
+            certPath = join(cls.baseFolder, 'capif_cert_server.pem')
             if not exists(certPath):
                 print("Certificate file not found")
                 return None
@@ -82,3 +96,15 @@ class CapifHandler:
         else:
             print("Security is disabled.")
             return None
+
+    @classmethod
+    def MaybeLog(cls):
+        if not cls.initialized:
+            raise RuntimeError("CapifHandler must be initialized before calling this method.")
+
+        if cls.loggingEnabled:
+            if cls.capifLogger is None:
+                cls.capifLogger = CAPIFLogger(certificates_folder=cls.baseFolder,
+                                              capif_host=cls.host, capif_https_port=str(cls.httpsPort))
+
+            # TODO: Logging
