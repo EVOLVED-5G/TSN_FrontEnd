@@ -103,19 +103,28 @@ class CapifHandler:
             raise RuntimeError("CapifHandler must be initialized before calling this method.")
 
         if cls.loggingEnabled:
-            if cls.apiId is None:
-                cls.capifLogger = CAPIFLogger(certificates_folder=cls.baseFolder,
-                                              capif_host=cls.host, capif_https_port=str(cls.httpsPort))
-                serviceDescription = cls.capifLogger.get_capif_service_description(
-                    capif_service_api_description_json_full_path=join(cls.baseFolder, "CAPIF_tsn_af_api.json"))
-                cls.apiId = serviceDescription["apiId"]
+            with open('access.log', 'a', encoding='utf8') as log:
+                log.write("A\n")
+                if cls.apiId is None:
+                    log.write("B\n")
+                    cls.capifLogger = CAPIFLogger(certificates_folder=cls.baseFolder,
+                                                  capif_host=cls.host, capif_https_port=str(cls.httpsPort))
+                    log.write("C\n")
+                    serviceDescription = cls.capifLogger.get_capif_service_description(
+                        capif_service_api_description_json_full_path=join(cls.baseFolder, "CAPIF_tsn_af_api.json"))
+                    log.write("D\n")
+                    cls.apiId = serviceDescription["apiId"]
+                    log.write(f"apiId: {cls.apiId}\n")
 
-            entry = cls.capifLogger.LogEntry(
-                apiId=cls.apiId, apiVersion='v1', apiName=endpoint,
-                resourceName=resource, uri=uri, protocol='HTTP_1_1',
-                invocationTime=time, invocationLatency=10, operation=method,
-                result=code, inputParameters=payload, outputParameters=response
-            )
+                log.write("1\n")
+                entry = cls.capifLogger.LogEntry(
+                    apiId=cls.apiId, apiVersion='v1', apiName=endpoint,
+                    resourceName=resource, uri=uri, protocol='HTTP_1_1',
+                    invocationTime=time, invocationLatency=10, operation=method,
+                    result=str(code), inputParameters=payload, outputParameters=response
+                )
+                log.write(f"entry = {entry}\n")
 
-            cls.capifLogger.save_log(invokerId, [entry])
+                cls.capifLogger.save_log(invokerId, [entry])
+                log.write("3\n")
 
