@@ -34,7 +34,7 @@ def handleLogging(invoker: str | None, resource: str, response: str, status: int
     payload = request.json if request.is_json else {}
 
     with open('access.log', 'a', encoding='utf8') as log:
-        log.write(f'{time}|{method}|{uri}|Invoker:"{invoker}"|Payload:"{payload}"|Response:"{response}"[{status}]')
+        log.write(f'{time}|{method}|{uri}|Invoker:"{invoker}"|Payload:"{payload}"|Response:"{response}"[{status}]\n')
 
     CapifHandler.MaybeLog(invokerId=invoker, endpoint=request.full_path,
                           resource=resource, uri=uri, method=method, time=time,
