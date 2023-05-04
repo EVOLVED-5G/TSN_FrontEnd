@@ -19,6 +19,6 @@ sed -i "s/{{PORT}}/$port/" Dockerfile
 echo ""
 echo "Building docker image..."
 
-docker build -t tsn_af .
+docker build -t tsn_frontend .
 
 echo "Done"
