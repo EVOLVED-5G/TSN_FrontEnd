@@ -46,7 +46,7 @@ def handleLogging(invoker: str | None, resource: str, response: str, status: int
 def profile():
     isAuthorized, invokerId = checkAuthorized()
     name = request.args.get('name', None)
-    resource = 'TSN_LIST_PROFILES' if name is None else 'TSN_DETAIL_PROFILES'
+    resource = 'TSN_LIST_PROFILES' if name is None else 'TSN_DETAIL_PROFILE'
 
     if isAuthorized:
         if name is None:

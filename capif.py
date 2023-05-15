@@ -114,7 +114,7 @@ class CapifHandler:
                     print(f"Unable to retrieve apiId: '{e}'")
 
             entry = cls.capifLogger.LogEntry(
-                apiId=cls.apiId, apiVersion='v1', apiName=endpoint,
+                apiId=cls.apiId, apiVersion='v1', apiName='/tsn/api/',
                 resourceName=resource, uri=uri, protocol='HTTP_1_1',
                 invocationTime=time, invocationLatency=10, operation=method,
                 result=str(code), inputParameters=payload, outputParameters=response
@@ -123,5 +123,7 @@ class CapifHandler:
             try:
                 cls.capifLogger.save_log(invokerId, [entry])
             except Exception as e:
-                print(f"Unable to send log to CAPIF: '{e}'")
+                with open("error.log", "a") as err:
+                    err.write(f"Unable to send log to CAPIF: '{e}'\n")
+                    err.write(f"Entry: {entry}\n\n")
 
