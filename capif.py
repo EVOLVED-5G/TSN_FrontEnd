@@ -78,12 +78,14 @@ class CapifHandler:
 
                 print("API registered in CAPIF")
             except RequestException as e:
-                print(f'Unable to publish API. Exception: {e}')
+                with open("error.log", "a") as err:
+                    err.write(f"Unable to publish API: '{e}'\n")
 
         if cls.securityEnabled:
             certPath = join(cls.baseFolder, 'capif_cert_server.pem')
             if not exists(certPath):
-                print("Certificate file not found")
+                with open("error.log", "a") as err:
+                    err.write(f"Certificate file (capif_cert_server.pem) not found.\n")
                 return None
             else:
                 with open(certPath, 'rb') as certFile:
@@ -111,7 +113,9 @@ class CapifHandler:
                         capif_service_api_description_json_full_path=join(cls.baseFolder, "CAPIF_tsn_af_api.json"))
                     cls.apiId = serviceDescription["apiId"]
                 except Exception as e:
-                    print(f"Unable to retrieve apiId: '{e}'")
+                    with open("error.log", "a") as err:
+                        err.write(f"Unable to retrieve apiId: '{e}'\n")
+                    return
 
             entry = cls.capifLogger.LogEntry(
                 apiId=cls.apiId, apiVersion='v1', apiName='/tsn/api/',
