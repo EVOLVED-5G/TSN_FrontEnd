@@ -31,12 +31,12 @@ def handleLogging(invoker: str | None, resource: str, response: str, status: int
     time = datetime.now(tz=timezone.utc).strftime('%Y-%m-%d %H:%M:%S')
     uri = request.base_url
     method = request.method
-    payload = request.json if request.is_json else {}
+    payload = request.json if request.is_json else request.args.to_dict()
 
     with open('access.log', 'a', encoding='utf8') as log:
         log.write(f'{time}|{method}|{uri}|Invoker:"{invoker}"|Payload:"{payload}"|Response:"{response}"[{status}]\n')
 
-    CapifHandler.MaybeLog(invokerId=invoker, endpoint=request.full_path,
+    CapifHandler.MaybeLog(invokerId=invoker,
                           resource=resource, uri=uri, method=method, time=time,
                           payload=payload, response=response, code=status)
 

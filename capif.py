@@ -98,7 +98,7 @@ class CapifHandler:
             return None
 
     @classmethod
-    def MaybeLog(cls, invokerId, endpoint, resource, uri, method, time, payload, response, code):
+    def MaybeLog(cls, invokerId, resource, uri, method, time, payload, response, code):
         if not cls.initialized:
             raise RuntimeError("CapifHandler must be initialized before calling this method.")
 
