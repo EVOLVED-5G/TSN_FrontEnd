@@ -55,12 +55,12 @@
         ],
         "protocol": "HTTP_1_1",
         "dataFormat": "JSON",
-        "securityMethods": ["Oauth"],
+        "securityMethods": ["OAUTH"],
         "interfaceDescriptions": [
           {
             "ipv4Addr": <<HOST>>,
             "port": <<PORT>>,
-            "securityMethods": ["Oauth"]
+            "securityMethods": ["OAUTH"]
           }
         ]
       }

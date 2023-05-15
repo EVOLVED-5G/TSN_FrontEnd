@@ -1,7 +1,7 @@
 from flask import Flask, render_template
 from flask_misaka import Misaka
 from back_end import ConfigurationHandler
-from capif import maybePublishApi
+from capif import CapifHandler
 import json
 
 app = Flask(__name__)
@@ -17,7 +17,8 @@ with open('README.md', 'r', encoding='utf-8') as file:
     readme = file.read()
 
 if app.config["CAPIF_ENABLED"]:
-    maybePublicKey = maybePublishApi(config)
+    CapifHandler.Initialize(config)
+    maybePublicKey = CapifHandler.MaybePublishApi()
 
     if app.config["CAPIF_SECURITY_ENABLED"]:
         if maybePublicKey is None:

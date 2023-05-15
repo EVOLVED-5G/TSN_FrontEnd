@@ -47,9 +47,9 @@ not supported"`. To enable a backend, specify the URL where the TSN backend is l
 
 ### CAPIF integration
 
-The TSN FrontEnd can optionally work with CAPIF, both for publishing the API and for securing access to the endpoints. This
-behavior is controlled by the `Enabled` and `SecurityEnabled` entries in the `CAPIF` section of `config.json`. These
-two settings are set to `true` by default.
+The TSN FrontEnd can optionally work with CAPIF for publishing the API, as well as for securing and logging access to the endpoints.
+This behavior is controlled by the `Enabled`, `SecurityEnabled` and `LoggingEnabled` entries in the `CAPIF` section of `config.json`.
+These settings are set to `true` by default.
 
 > By default, this configuration points to the `capifcore` domain, which is also the default for CAPIF deployments.
 > Unless the CAPIF domain can be resolved by external DNS, this value should be configured on the `hosts` file of the
@@ -60,7 +60,7 @@ two settings are set to `true` by default.
 Upon a successful publishing process, the following file will be created `capif_data/publisherDetails.txt`. This
 file contains the username and password used during the registration (randomly generated) and the host and port
 configured for the FrontEnd. In the case of a Docker deployment, this file can be checked using the following command
-in the host machine:
+in the host machine (or using the `check.sh` script):
 
 ```
 docker exec TSN_FrontEnd bash -c "cat ./capif_data/publisherDetails.txt"
@@ -74,12 +74,16 @@ header, with the Bearer provided by CAPIF.
 > If this setting is enabled, but for some reason the TSN FrontEnd was not able to register the API through CAPIF, or to
 > retrieve the CAPIF public key, the server will immediately abort the execution.
 
+Additionally, if the `LoggingEnabled` parameter is set to `true` a record of every access attempt to the endpoints, including
+input parameters as well as the returned response, will be recorded in CAPIF. In all cases this information is recorded
+in the `access.log` file, in the root folder of the TSN FrontEnd.
+
 ## Deployment
 
 ### Docker container
 
-This repository contains 3 files (`Dockerfile`, `build.sh`, `run.sh`) prepared for supporting the deployment of the
-TSF FrontEnd as a Docker container. The deployment procedure is as follows:
+This repository contains 4 files (`Dockerfile`, `build.sh`, `run.sh`, `check.sh`) prepared for supporting the deployment
+of the TSF FrontEnd as a Docker container. The deployment procedure is as follows:
 
 1. Clone this repository. The environment must already have an installation of Docker (tested on version 20.10.7).
 2. Include any necessary profile information in the `Profiles` sub-folder. `Profiles/sample` can be used as a guide.
@@ -90,6 +94,7 @@ Profiles must have the `yml` extension to be read by the TSN FrontEnd.
      - CAPIF is configured in the `capifcore` domain, with ports 8080 (HTTP) and 443 (HTTPS)
 4. Execute `build.sh`. This file will prepare a Docker image (tagged `tsn_frontend`).
 5. Execute `run.sh`. This will create a new container (named `TSN_FrontEnd`) based on the previously generated image.
+6. Optionally, execute `check.sh`, in order to confirm if some errors have been recorded and the CAPIF publisher details.
 
 > Note that the build process will create a copy of the files in the `Profiles` sub-folder and `config.json`. If these
 > files are edited after the creation of the image, this process (starting from step 4) must be executed again.
@@ -112,7 +117,7 @@ that the values for `<HOST>` and `<PORT>` match those configured in `config.json
 > Changes made to the `Profiles` folder and `config.json` will be reflected in the TSN FrontEnd after restarting the server.
 >
 > In order to force a new CAPIF publishing process, manually delete the `capif_data/publisherDetails.txt` file
-> previously generated.
+> previously generated. Also consider removing `access.log` and `error.log`, to avoid misunderstandings.
 
 ## Endpoints
 
