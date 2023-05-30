@@ -10,7 +10,7 @@
             "resources": [
               {
                 "resourceName": "TSN_LIST_PROFILES",
-                "commType": " SUBSCRIBE_NOTIFY",
+                "commType": "SUBSCRIBE_NOTIFY",
                 "uri": "/profile",
                 "custOpName": "http_get",
                 "operations": ["GET"],
@@ -18,7 +18,7 @@
               },
               {
                 "resourceName": "TSN_DETAIL_PROFILE",
-                "commType": " SUBSCRIBE_NOTIFY",
+                "commType": "SUBSCRIBE_NOTIFY",
                 "uri": "/profile?name={profileName}",
                 "custOpName": "http_get",
                 "operations": ["GET"],
@@ -26,7 +26,7 @@
               },
               {
                 "resourceName": "TSN_APPLY_CONFIGURATION",
-                "commType": " SUBSCRIBE_NOTIFY",
+                "commType": "SUBSCRIBE_NOTIFY",
                 "uri": "/apply",
                 "custOpName": "http_post",
                 "operations": ["POST"],
@@ -34,7 +34,7 @@
               },
               {
                 "resourceName": "TSN_CLEAR_CONFIGURATION",
-                "commType": " SUBSCRIBE_NOTIFY",
+                "commType": "SUBSCRIBE_NOTIFY",
                 "uri": "/clear",
                 "custOpName": "http_post",
                 "operations": ["POST"],
