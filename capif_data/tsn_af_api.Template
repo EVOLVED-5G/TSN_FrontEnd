@@ -56,13 +56,7 @@
         "protocol": "HTTP_1_1",
         "dataFormat": "JSON",
         "securityMethods": ["OAUTH"],
-        "interfaceDescriptions": [
-          {
-            "ipv4Addr": <<HOST>>,
-            "port": <<PORT>>,
-            "securityMethods": ["OAUTH"]
-          }
-        ]
+        <<INTERFACE_OR_DOMAIN_NAME>>
       }
     ],
     "description": "API of dummy netapp to test",

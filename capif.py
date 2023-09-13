@@ -9,6 +9,8 @@ class CapifHandler:
     detailsFile = './capif_data/publisherDetails.txt'
     baseFolder = abspath(join(dirname(__file__), 'capif_data'))
 
+    _interface_or_domain_name = '<<INTERFACE_OR_DOMAIN_NAME>>'
+
     initialized = False
     frontEndHost = frontEndPort = None
     host = httpPort = httpsPort = None
@@ -18,8 +20,14 @@ class CapifHandler:
 
     @classmethod
     def Initialize(cls, config: Dict):
-        cls.frontEndHost = config['FrontEnd']['Host']
-        cls.frontEndPort = config['FrontEnd']['Port']
+        cls.frontEndDomainName = None
+        cls.frontEndHost = None
+        cls.frontEndPort = None
+        if config['FrontEnd'].get('DomainName',None) != None:
+            cls.frontEndDomainName = config['FrontEnd']['DomainName']
+        else:
+            cls.frontEndHost = config['FrontEnd']['Host']
+            cls.frontEndPort = config['FrontEnd']['Port']
 
         capif = config['CAPIF']
         cls.host = capif['Host']
@@ -44,9 +52,20 @@ class CapifHandler:
             with open(join(cls.baseFolder, 'tsn_af_api.Template'), 'r', encoding='utf-8') as template:
                 with open(join(cls.baseFolder, 'tsn_af_api.json'), 'w', encoding='utf-8') as output:
                     for line in template:
-                        output.write(line
-                                     .replace('<<HOST>>', f'"{cls.frontEndHost}"')
-                                     .replace('<<PORT>>', str(cls.frontEndPort)))
+                        if _interface_or_domain_name in line:
+                            if cls.frontEndDomainName != None:
+                                output.write('                     "domainName:"' + cls.frontEndDomainName)
+                            if cls.frontEndHost != None and cls.frontEndPort != None:
+                                output.write('                     "interfaceDescriptions": [')
+                                output.write('                       {')
+                                output.write('                         "ipv4Addr": ' + str(cls.frontEndHost) + ',')
+                                output.write('                         "port": ' + str(cls.frontEndPort) + ',')
+                                output.write('                         "securityMethods": ["OAUTH"]')
+                                output.write('                       }')
+                                output.write('                     ]')
+                        # output.write(line
+                        #              .replace('<<HOST>>', f'"{cls.frontEndHost}"')
+                        #              .replace('<<PORT>>', str(cls.frontEndPort)))
 
             capif_connector = CAPIFProviderConnector(certificates_folder=cls.baseFolder,
                                                      capif_host=cls.host,
