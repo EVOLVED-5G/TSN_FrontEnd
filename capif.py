@@ -64,7 +64,7 @@ class CapifHandler:
                                 output.write('                       }')
                                 output.write('                     ]')
                         else:
-                            output.write(line
+                            output.write(line)
                         # output.write(line
                         #              .replace('<<HOST>>', f'"{cls.frontEndHost}"')
                         #              .replace('<<PORT>>', str(cls.frontEndPort)))
