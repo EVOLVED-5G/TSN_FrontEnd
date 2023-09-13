@@ -54,12 +54,12 @@ class CapifHandler:
                     for line in template:
                         if _interface_or_domain_name in line:
                             if cls.frontEndDomainName != None:
-                                output.write('                     "domainName:"' + cls.frontEndDomainName)
+                                output.write('                     "domainName": "' + cls.frontEndDomainName + '"')
                             if cls.frontEndHost != None and cls.frontEndPort != None:
                                 output.write('                     "interfaceDescriptions": [')
                                 output.write('                       {')
-                                output.write('                         "ipv4Addr": ' + str(cls.frontEndHost) + ',')
-                                output.write('                         "port": ' + str(cls.frontEndPort) + ',')
+                                output.write('                         "ipv4Addr": "' + str(cls.frontEndHost) + '",')
+                                output.write('                         "port": "' + str(cls.frontEndPort) + '",')
                                 output.write('                         "securityMethods": ["OAUTH"]')
                                 output.write('                       }')
                                 output.write('                     ]')
