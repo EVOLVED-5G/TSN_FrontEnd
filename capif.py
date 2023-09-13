@@ -12,7 +12,7 @@ class CapifHandler:
     _interface_or_domain_name = '<<INTERFACE_OR_DOMAIN_NAME>>'
 
     initialized = False
-    frontEndHost = frontEndPort = None
+    frontEndHost = frontEndPort = frontEndDomainName =None
     host = httpPort = httpsPort = None
     securityEnabled = loggingEnabled = None
 
@@ -52,7 +52,7 @@ class CapifHandler:
             with open(join(cls.baseFolder, 'tsn_af_api.Template'), 'r', encoding='utf-8') as template:
                 with open(join(cls.baseFolder, 'tsn_af_api.json'), 'w', encoding='utf-8') as output:
                     for line in template:
-                        if _interface_or_domain_name in line:
+                        if cls._interface_or_domain_name in line:
                             if cls.frontEndDomainName != None:
                                 output.write('                     "domainName": "' + cls.frontEndDomainName + '"')
                             if cls.frontEndHost != None and cls.frontEndPort != None:
