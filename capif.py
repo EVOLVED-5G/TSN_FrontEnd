@@ -60,7 +60,7 @@ class CapifHandler:
                                 output.write('                     "interfaceDescriptions": [')
                                 output.write('                       {')
                                 output.write(f'                         "ipv4Addr": "{cls.frontEndHost}",')
-                                output.write(f'                         "port": "{cls.frontEndPort}",')
+                                output.write(f'                         "port": {cls.frontEndPort},')
                                 output.write('                         "securityMethods": ["OAUTH"]')
                                 output.write('                       }')
                                 output.write('                     ]')
