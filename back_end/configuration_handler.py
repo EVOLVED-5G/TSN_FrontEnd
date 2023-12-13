@@ -50,7 +50,7 @@ class ConfigurationHandler:
             config.token = token
 
             if cls.backend is not None:
-                success, detail = cls.Post('/apply', {'identifier': identifier, **config.AsPayload})
+                success, detail = cls.Post('apply', {'identifier': identifier, **config.AsPayload})
                 if not success:
                     return False, detail
 
@@ -73,7 +73,7 @@ class ConfigurationHandler:
                 return False, f"Unauthorized"
             else:
                 if cls.backend is not None:
-                    success, detail = cls.Post('/clear', {'identifier': identifier, **config.AsPayload})
+                    success, detail = cls.Post('clear', {'identifier': identifier, **config.AsPayload})
                     if not success:
                         return False, detail
 
