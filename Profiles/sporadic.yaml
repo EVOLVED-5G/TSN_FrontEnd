@@ -1,0 +1,13 @@
+# Profiles must be saved as yml or yaml files.
+
+# The following values specify the expected (SLA) KPIs
+delay: 50.0
+jitter: 10.0
+throughput: 0.04
+packet_loss: 5.0
+
+# The following values specify the traffic type:
+periodicity: sporadic
+period: 50.0
+data_size: 200.0
+critical: True
