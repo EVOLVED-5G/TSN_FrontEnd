@@ -101,6 +101,7 @@ ENV/
 # Ignore all profiles except for 'sample'
 Profiles/*
 !Profiles/sample
+!Profiles/sporadic.yaml
 
 # Ignore certificates in capif_data
 capif_data/*
