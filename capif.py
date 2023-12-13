@@ -129,7 +129,7 @@ class CapifHandler:
                     cls.capifLogger = CAPIFLogger(certificates_folder=cls.baseFolder,
                                                   capif_host=cls.host, capif_https_port=str(cls.httpsPort))
                     serviceDescription = cls.capifLogger.get_capif_service_description(
-                        capif_service_api_description_json_full_path=join(cls.baseFolder, "CAPIF_tsn_af_api.json"))
+                        capif_service_api_description_json_full_path=join(cls.baseFolder, "tsn_af_api.json"))
                     cls.apiId = serviceDescription["apiId"]
                 except Exception as e:
                     with open("error.log", "a") as err:
